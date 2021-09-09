@@ -1,0 +1,11 @@
+1. Create models & Enums
+2. Create board empty board with dynamic load of delimiters delimiters
+3. Create Factory bean for loading beans dynamically by identifiers
+4. Add Service layer for Drawing - odd, even, printBoard
+5. Add Service layer for Playing - next move, start game, end game , mark position
+6. Add Timers - to run each 2 seconds, ability to start/stop timer
+7. Add Junit tests for Drawing and PlayService
+8. Add event sourcing - modify normal moves with events
+9. Add Dockerfile
+10. Add Jenkinsfile
+11. 
