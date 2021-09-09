@@ -17,16 +17,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kyndryl.task.dto.PlayDto;
 import com.kyndryl.task.enums.PlayerEnum;
-import com.kyndryl.task.event.NextMoveEvent;
 import com.kyndryl.task.event.EventPublisher;
+import com.kyndryl.task.event.NextMoveEvent;
+import com.kyndryl.task.event.PlayerWonEvent;
 import com.kyndryl.task.service.drawing.DrawingService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 	private final AtomicInteger count = new AtomicInteger(0);
 
 	private static List<int[][]> POSITION_LIST = new ArrayList<int[][]>();
-	
+
 	private static BlockingQueue<PlayDto> blockingQueue = new LinkedBlockingDeque<>();
 
 	static {
@@ -63,8 +62,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 	private char[][] board;
 
 	@Autowired
-	public PlayServiceImpl(final DrawingService drawingService, 
-			final EventPublisher eventPublisher) {
+	public PlayServiceImpl(final DrawingService drawingService, final EventPublisher eventPublisher) {
 		this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
 		this.drawingService = drawingService;
 		this.eventPublisher = eventPublisher;
@@ -93,22 +91,22 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 		final PlayerEnum player = PlayerEnum.nextPlayer();
 		POSITION_LIST.remove(nextIndex);
 		final PlayDto playDto = new PlayDto(realRow, realCol, player);
-		eventPublisher.publishCustomEvent(playDto);
+		eventPublisher.publishCustomEvent(playDto, new NextMoveEvent(playDto));
 	}
-	
+
 	@Override
 	public void markMove(final PlayDto playDto) {
 		board[playDto.getRow()][playDto.getColumn()] = playDto.getPlayer().toString().charAt(0);
 	}
 
-	private String playerHasWon() {
+	private void checkPlayerWon() {
 		// Check each row
 		for (int i = 0; i < 5; i++) {
 			final boolean equalRow = i % 2 == 0 && (board[i][0] == board[i][2] && board[i][2] == board[i][4])
 					&& board[i][0] != ' ';
 			if ((equalRow && board[i][0] == 'O') || (equalRow && board[i][0] == 'X')) {
-				// System.out.println(String.format(MESSAGE_PLAYER_WON, board[i][0]));
-				return String.format(MESSAGE_PLAYER_WON, board[i][0]);
+				final String message = String.format(MESSAGE_PLAYER_WON, board[i][0]);
+				eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
 			}
 		}
 
@@ -117,26 +115,24 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 			final boolean equalCol = j % 2 == 0 && board[0][j] == board[2][j] && board[2][j] == board[4][j]
 					&& board[0][j] != ' ';
 			if (equalCol && board[0][j] != 'O' || equalCol && board[0][j] != 'X') {
-				// System.out.println(String.format(MESSAGE_PLAYER_WON, board[0][j]));
-				return String.format(MESSAGE_PLAYER_WON, board[0][j]);
+				final String message = String.format(MESSAGE_PLAYER_WON, board[0][j]);
+				eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
 			}
 		}
 
-		// Check the diagonals
+		// left diagonal
 		final boolean leftDiagonal = board[0][0] == board[2][2] && board[2][2] == board[4][4] && board[0][0] != ' ';
 		if ((leftDiagonal && board[0][0] != 'O') || (leftDiagonal && board[0][0] != 'X')) {
-			// System.out.println(String.format(MESSAGE_PLAYER_WON, board[0][0]));
-			return String.format(MESSAGE_PLAYER_WON, board[0][0]);
+			final String message = String.format(MESSAGE_PLAYER_WON, board[0][0]);
+			eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
 		}
 
 		// right diagonal
 		final boolean rightDiagonal = board[4][0] == board[2][2] && board[2][2] == board[0][4] && board[4][0] != ' ';
 		if ((rightDiagonal && board[4][0] != 'O') || (rightDiagonal && board[4][0] != 'X')) {
-			// System.out.println(String.format(MESSAGE_PLAYER_WON, board[4][0]));
-			return String.format(MESSAGE_PLAYER_WON, board[4][0]);
+			final String message = String.format(MESSAGE_PLAYER_WON, board[4][0]);
+			eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
 		}
-
-		return Strings.EMPTY;
 	}
 
 	@Override
@@ -148,17 +144,16 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 
 	@Override
 	public void run() {
-		if (!Strings.isEmpty(playerHasWon())) {
-			endGame(playerHasWon());
+		checkPlayerWon();
+
+		if (!running.get())
 			return;
-		}
 
 		if (count.getAndIncrement() == 9) {
 			endGame(MESSAGE_GAME_ENDS);
 			return;
 		}
 
-		//final PlayDto playDto = nextMove();
 		nextMove();
 		final PlayDto playDto = blockingQueue.poll();
 		markMove(playDto);
@@ -168,7 +163,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 	@Override
 	public void onApplicationEvent(final NextMoveEvent event) {
 		final PlayDto playDto = (PlayDto) event.getSource();
-		System.out.println("Received event data:=" + playDto );
+		System.out.println("Received NextMoveEvent:" + playDto);
 		blockingQueue.add(playDto);
 	}
 
