@@ -75,9 +75,9 @@ public class DrawingServiceImpl implements DrawingService {
 	public String getSeparator(final int rowNum, final int colNum) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append(evenOrOdd(rowNum))
-		.append("row")
+		.append(BOARD_ROW)
 		.append(evenOrOdd(colNum))
-		.append("col");
+		.append(BOARD_COL);
 		return builder.toString();
 	}
 
@@ -88,7 +88,7 @@ public class DrawingServiceImpl implements DrawingService {
 	
 	@Override
 	public String evenOrOdd(final int number) {
-		return isEven(number) ? "even" : "odd";
+		return isEven(number) ? NUMBER_EVEN : NUMBER_ODD;
 	}
 
 }

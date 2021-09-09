@@ -10,8 +10,8 @@ public class EventPublisher {
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 
-	public <T> void  publishCustomEvent(final T playDto, final ApplicationEvent event) {
-		System.out.println("Publishing " + event.getClass().getSimpleName() + ": " + playDto);
+	public <T> void  publishCustomEvent(final T message, final ApplicationEvent event) {
+		System.out.println("Publishing " + event.getClass().getSimpleName() + ": " + message);
 		applicationEventPublisher.publishEvent(event);
 	}
 }

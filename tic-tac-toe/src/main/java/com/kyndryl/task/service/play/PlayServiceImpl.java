@@ -133,6 +133,10 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 			final String message = String.format(MESSAGE_PLAYER_WON, board[4][0]);
 			eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
 		}
+		
+		if (count.getAndIncrement() == 9) {
+			eventPublisher.publishCustomEvent(MESSAGE_GAME_ENDS, new PlayerWonEvent(this, MESSAGE_GAME_ENDS));
+		}
 	}
 
 	@Override
@@ -148,11 +152,6 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 
 		if (!running.get())
 			return;
-
-		if (count.getAndIncrement() == 9) {
-			endGame(MESSAGE_GAME_ENDS);
-			return;
-		}
 
 		nextMove();
 		final PlayDto playDto = blockingQueue.poll();
