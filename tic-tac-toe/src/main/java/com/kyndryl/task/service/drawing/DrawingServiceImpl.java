@@ -1,15 +1,14 @@
 package com.kyndryl.task.service.drawing;
 
+import static com.kyndryl.task.util.Constants.MESSAGE_BOARD_CREATED;
+import static com.kyndryl.task.util.Constants.MESSAGE_GAME_START;
+import static com.kyndryl.task.util.Constants.MESSAGE_PLAYER_START;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kyndryl.factory.Factory;
+import com.kyndryl.task.factory.Factory;
 import com.kyndryl.task.service.separator.SeparatorService;
-
-import static com.kyndryl.task.util.Constants.MESSAGE_GAME_START;
-import static com.kyndryl.task.util.Constants.MESSAGE_BOARD_CREATED;
-import static com.kyndryl.task.util.Constants.MESSAGE_PLAYER_START;
-
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,28 +21,28 @@ public class DrawingServiceImpl implements DrawingService {
 	private SeparatorService separatorService;
 	
 	@Autowired
-	public DrawingServiceImpl(Factory factory) {
+	public DrawingServiceImpl(final Factory factory) {
 		this.factory = factory;
 	}
 	
 	
 	@Override
 	public char[][] drawBoard() {
-		int numRows = 3;
-		int numCols = 3;
+		final int numRows = 3;
+		final int numCols = 3;
 		
 		log.info(MESSAGE_GAME_START);
 		System.out.println(MESSAGE_GAME_START);
-		int totalRows = numRows + 2;
-		int totalCols = numCols + 2;
-		char [][] board = new char[totalRows][totalCols];
+		final int totalRows = numRows + 2;
+		final int totalCols = numCols + 2;
+		final char [][] board = new char[totalRows][totalCols];
 		
 		
 		for (int row=0; row < totalRows; row++) {
 			for (int col=0; col < totalCols; col++) {
-				String serviceName = getSeparator(row, col);
+				final String serviceName = getSeparator(row, col);
 				separatorService = (SeparatorService) factory.getBean(SeparatorService.class, serviceName);
-				char separator = separatorService.getSeparator();
+				final char separator = separatorService.getSeparator();
 				board[row][col] = separator;
 				System.out.print(board[row][col]);
 			}
@@ -60,7 +59,7 @@ public class DrawingServiceImpl implements DrawingService {
 	}
 	
 	@Override
-	public void printBoard(char[][] board) {
+	public void printBoard(final char[][] board) {
 		System.out.println("\nPrintBoard\n");
 		
 		for (int row=0; row < board.length; row++) {
@@ -73,8 +72,8 @@ public class DrawingServiceImpl implements DrawingService {
 	}
 	
 	@Override
-	public String getSeparator(int rowNum, int colNum) {
-		StringBuilder builder = new StringBuilder();
+	public String getSeparator(final int rowNum, final int colNum) {
+		final StringBuilder builder = new StringBuilder();
 		builder.append(evenOrOdd(rowNum))
 		.append("row")
 		.append(evenOrOdd(colNum))
@@ -83,12 +82,12 @@ public class DrawingServiceImpl implements DrawingService {
 	}
 
 	@Override
-	public boolean isEven(int number) {
+	public boolean isEven(final int number) {
 		return number % 2 == 0;
 	}
 	
 	@Override
-	public String evenOrOdd(int number) {
+	public String evenOrOdd(final int number) {
 		return isEven(number) ? "even" : "odd";
 	}
 

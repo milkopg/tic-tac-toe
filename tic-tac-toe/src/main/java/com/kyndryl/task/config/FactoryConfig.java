@@ -1,13 +1,12 @@
-package com.kyndryl.config;
+package com.kyndryl.task.config;
 
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.kyndryl.factory.Factory;
+import com.kyndryl.task.factory.Factory;
 
 @Configuration
 public class FactoryConfig {
@@ -25,7 +24,7 @@ public class FactoryConfig {
 	}
 	
 	@Bean
-	public static Factory createFactory(Factory factory) {
+	public static Factory createFactory(final Factory factory) {
 		return factory;
 	}
 }

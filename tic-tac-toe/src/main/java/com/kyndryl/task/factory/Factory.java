@@ -1,4 +1,4 @@
-package com.kyndryl.factory;
+package com.kyndryl.task.factory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
