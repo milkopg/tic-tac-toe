@@ -8,4 +8,6 @@
 8. Add event sourcing - modify normal moves with events
 9. Add Dockerfile
 10. Add Jenkinsfile
-11. 
+11. Generate Junit coverage results
+12. Generate BDD tests
+13. Testing
