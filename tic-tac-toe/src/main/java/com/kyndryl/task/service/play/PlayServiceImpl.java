@@ -36,12 +36,12 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 
 	private static AtomicBoolean running = new AtomicBoolean(true);
 
-	private final AtomicInteger count = new AtomicInteger(0);
+	private static final AtomicInteger count = new AtomicInteger(0);
 
 	private static List<int[][]> POSITION_LIST = new ArrayList<int[][]>();
 
 	private static BlockingQueue<PlayDto> blockingQueue = new LinkedBlockingDeque<>();
-
+	
 	static {
 
 		for (int i = 0; i < 5; i++) {
@@ -107,6 +107,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 			if ((equalRow && board[i][0] == 'O') || (equalRow && board[i][0] == 'X')) {
 				final String message = String.format(MESSAGE_PLAYER_WON, board[i][0]);
 				eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
+				return;
 			}
 		}
 
@@ -117,6 +118,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 			if (equalCol && board[0][j] != 'O' || equalCol && board[0][j] != 'X') {
 				final String message = String.format(MESSAGE_PLAYER_WON, board[0][j]);
 				eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
+				return;
 			}
 		}
 
@@ -125,6 +127,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 		if ((leftDiagonal && board[0][0] != 'O') || (leftDiagonal && board[0][0] != 'X')) {
 			final String message = String.format(MESSAGE_PLAYER_WON, board[0][0]);
 			eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
+			return;
 		}
 
 		// right diagonal
@@ -132,6 +135,7 @@ public class PlayServiceImpl implements PlayService, Runnable, ApplicationListen
 		if ((rightDiagonal && board[4][0] != 'O') || (rightDiagonal && board[4][0] != 'X')) {
 			final String message = String.format(MESSAGE_PLAYER_WON, board[4][0]);
 			eventPublisher.publishCustomEvent(message, new PlayerWonEvent(this, message));
+			return;
 		}
 		
 		if (count.getAndIncrement() == 9) {

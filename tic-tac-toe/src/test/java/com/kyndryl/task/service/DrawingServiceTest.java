@@ -17,9 +17,6 @@ public class DrawingServiceTest {
 	@Autowired
 	private DrawingService drawingService;
 	
-	//@Autowired
-	//private PlayService playService;
-
 	@Test
 	public void testDrawBoardSize() {
 		final char [][] board = drawingService.drawBoard();
@@ -48,11 +45,6 @@ public class DrawingServiceTest {
 		
 	}
 	
-	//@Test
-//	public void testStartGame() {
-//		playService.startGame();
-//	}
-//	
 	@Test
 	public void getSeparatorTest() {
 		drawingService.drawBoard();
