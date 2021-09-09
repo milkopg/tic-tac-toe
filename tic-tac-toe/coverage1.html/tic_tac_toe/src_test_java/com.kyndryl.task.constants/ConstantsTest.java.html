@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ConstantsTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tic_tac_toe (Sep 9, 2021 9:55:39 AM)</a> &gt; <a href="../../index.html" class="el_group">tic_tac_toe</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">com.kyndryl.task.constants</a> &gt; <span class="el_source">ConstantsTest.java</span></div><h1>ConstantsTest.java</h1><pre class="source lang-java linenums">package com.kyndryl.task.constants;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+import com.kyndryl.task.enums.PlayerEnum;
+import com.kyndryl.task.util.Constants;
+
+<span class="fc" id="L10">public class ConstantsTest {</span>
+	@Test
+	public void stirngConcatenationTest() {
+<span class="fc" id="L13">		assertEquals(&quot;The game will start with player X&quot;, &quot;The game will start with player &quot; + PlayerEnum.X);</span>
+<span class="fc" id="L14">	}</span>
+	
+	@Test
+	public void delayTaskTest() {
+<span class="fc" id="L18">		assertEquals(Constants.TASK_DELAY, 2);</span>
+<span class="fc" id="L19">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span>tic_tac_toe (Sep 9, 2021 9:55:39 AM)</div></body></html>

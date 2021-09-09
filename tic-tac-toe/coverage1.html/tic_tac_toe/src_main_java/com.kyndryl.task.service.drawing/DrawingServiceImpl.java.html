@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DrawingServiceImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tic_tac_toe (Sep 9, 2021 9:55:39 AM)</a> &gt; <a href="../../index.html" class="el_group">tic_tac_toe</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">com.kyndryl.task.service.drawing</a> &gt; <span class="el_source">DrawingServiceImpl.java</span></div><h1>DrawingServiceImpl.java</h1><pre class="source lang-java linenums">package com.kyndryl.task.service.drawing;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kyndryl.factory.Factory;
+import com.kyndryl.task.service.separator.SeparatorService;
+
+import static com.kyndryl.task.util.Constants.MESSAGE_GAME_START;
+import static com.kyndryl.task.util.Constants.MESSAGE_BOARD_CREATED;
+import static com.kyndryl.task.util.Constants.MESSAGE_PLAYER_START;
+
+
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+<span class="fc" id="L17">@Slf4j</span>
+public class DrawingServiceImpl implements DrawingService {
+
+	private final Factory factory;
+	
+	private SeparatorService separatorService;
+	
+	@Autowired
+<span class="fc" id="L25">	public DrawingServiceImpl(Factory factory) {</span>
+<span class="fc" id="L26">		this.factory = factory;</span>
+<span class="fc" id="L27">	}</span>
+	
+	
+	@Override
+	public char[][] drawBoard() {
+<span class="fc" id="L32">		int numRows = 3;</span>
+<span class="fc" id="L33">		int numCols = 3;</span>
+		
+<span class="fc" id="L35">		log.info(MESSAGE_GAME_START);</span>
+<span class="fc" id="L36">		System.out.println(MESSAGE_GAME_START);</span>
+<span class="fc" id="L37">		int totalRows = numRows + 2;</span>
+<span class="fc" id="L38">		int totalCols = numCols + 2;</span>
+<span class="fc" id="L39">		char [][] board = new char[totalRows][totalCols];</span>
+		
+		
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int row=0; row &lt; totalRows; row++) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			for (int col=0; col &lt; totalCols; col++) {</span>
+<span class="fc" id="L44">				String serviceName = getSeparator(row, col);</span>
+<span class="fc" id="L45">				separatorService = (SeparatorService) factory.getBean(SeparatorService.class, serviceName);</span>
+<span class="fc" id="L46">				char separator = separatorService.getSeparator();</span>
+<span class="fc" id="L47">				board[row][col] = separator;</span>
+<span class="fc" id="L48">				System.out.print(board[row][col]);</span>
+			}
+<span class="fc" id="L50">			System.out.println();</span>
+		}
+		
+<span class="fc" id="L53">		log.info(MESSAGE_BOARD_CREATED);</span>
+<span class="fc" id="L54">		log.info(MESSAGE_PLAYER_START);</span>
+		
+<span class="fc" id="L56">		System.out.println(MESSAGE_BOARD_CREATED);</span>
+<span class="fc" id="L57">		System.out.println(MESSAGE_PLAYER_START);</span>
+		
+<span class="fc" id="L59">		return board;</span>
+	}
+	
+	@Override
+	public void printBoard(char[][] board) {
+<span class="fc" id="L64">		System.out.println(&quot;\nPrintBoard\n&quot;);</span>
+		
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int row=0; row &lt; board.length; row++) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			for (int col=0; col &lt; board[0].length; col++) {</span>
+<span class="fc" id="L68">				System.out.print(board[row][col]);</span>
+			}
+<span class="fc" id="L70">			System.out.println();</span>
+		}
+		
+<span class="fc" id="L73">	}</span>
+	
+	@Override
+	public String getSeparator(int rowNum, int colNum) {
+<span class="fc" id="L77">		StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L78">		builder.append(evenOrOdd(rowNum))</span>
+<span class="fc" id="L79">		.append(&quot;row&quot;)</span>
+<span class="fc" id="L80">		.append(evenOrOdd(colNum))</span>
+<span class="fc" id="L81">		.append(&quot;col&quot;);</span>
+<span class="fc" id="L82">		return builder.toString();</span>
+	}
+
+	@Override
+	public boolean isEven(int number) {
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		return number % 2 == 0;</span>
+	}
+	
+	@Override
+	public String evenOrOdd(int number) {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		return isEven(number) ? &quot;even&quot; : &quot;odd&quot;;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span>tic_tac_toe (Sep 9, 2021 9:55:39 AM)</div></body></html>

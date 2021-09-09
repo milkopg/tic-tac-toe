@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DrawingServiceTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tic_tac_toe (Sep 9, 2021 9:55:39 AM)</a> &gt; <a href="../../index.html" class="el_group">tic_tac_toe</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">com.kyndryl.task.service</a> &gt; <span class="el_source">DrawingServiceTest.java</span></div><h1>DrawingServiceTest.java</h1><pre class="source lang-java linenums">package com.kyndryl.task.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.kyndryl.task.service.drawing.DrawingService;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+<span class="fc" id="L15">public class DrawingServiceTest {</span>
+
+	@Autowired
+	private DrawingService drawingService;
+	
+	//@Autowired
+	//private PlayService playService;
+
+	@Test
+	public void testDrawBoardSize() {
+<span class="fc" id="L25">		final char [][] board = drawingService.drawBoard();</span>
+<span class="fc" id="L26">		assertEquals(board.length, 5);</span>
+<span class="fc" id="L27">		assertEquals(board[0].length, 5);</span>
+		
+<span class="fc" id="L29">		int countPipes = 0;</span>
+<span class="fc" id="L30">		int countPlus = 0;</span>
+<span class="fc" id="L31">		int countMinus = 0;</span>
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		for (int i=0; i &lt; board.length; i++) {</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (int j=0; j &lt; board[0].length; j++) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">				if (board[i][j]  == '|') {</span>
+<span class="fc" id="L36">					countPipes++;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">				} else if (board[i][j]  == '+') {</span>
+<span class="fc" id="L38">					countPlus++;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">				} else if (board[i][j]  == '-') {</span>
+<span class="fc" id="L40">					countMinus++;</span>
+				}
+			}
+		}
+		
+<span class="fc" id="L45">		assertEquals(countPipes, 6);</span>
+<span class="fc" id="L46">		assertEquals(countPlus, 4);</span>
+<span class="fc" id="L47">		assertEquals(countMinus, 6);</span>
+		
+<span class="fc" id="L49">	}</span>
+	
+	//@Test
+//	public void testStartGame() {
+//		playService.startGame();
+//	}
+//	
+	@Test
+	public void getSeparatorTest() {
+<span class="fc" id="L58">		drawingService.drawBoard();</span>
+<span class="fc" id="L59">		assertEquals(&quot;evenrowevencol&quot;, drawingService.getSeparator(0, 0));</span>
+<span class="fc" id="L60">		assertEquals(&quot;evenrowoddcol&quot;, drawingService.getSeparator(0, 1));</span>
+<span class="fc" id="L61">		assertEquals(&quot;oddrowevencol&quot;, drawingService.getSeparator(1, 0));</span>
+<span class="fc" id="L62">		assertEquals(&quot;oddrowoddcol&quot;, drawingService.getSeparator(1, 1));</span>
+<span class="fc" id="L63">	}</span>
+	
+	@Test
+	public void isEvenTestTrue() {
+<span class="fc" id="L67">		assertEquals(true, drawingService.isEven(0)); </span>
+<span class="fc" id="L68">	}</span>
+	
+	@Test
+	public void isEvenTestFalse() {
+<span class="fc" id="L72">		assertEquals(false, drawingService.isEven(1)); </span>
+<span class="fc" id="L73">	}</span>
+	
+	@Test 
+	public void isEvenTest() {
+<span class="fc" id="L77">		assertEquals(&quot;even&quot;, drawingService.evenOrOdd(0));</span>
+<span class="fc" id="L78">	}</span>
+	
+	@Test 
+	public void isOddTest() {
+<span class="fc" id="L82">		assertEquals(&quot;odd&quot;, drawingService.evenOrOdd(1));</span>
+<span class="fc" id="L83">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span>tic_tac_toe (Sep 9, 2021 9:55:39 AM)</div></body></html>

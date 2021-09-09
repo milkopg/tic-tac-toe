@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>PlayServiceImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">tic_tac_toe (Sep 9, 2021 9:55:39 AM)</a> &gt; <a href="../../index.html" class="el_group">tic_tac_toe</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">com.kyndryl.task.service.play</a> &gt; <span class="el_source">PlayServiceImpl.java</span></div><h1>PlayServiceImpl.java</h1><pre class="source lang-java linenums">package com.kyndryl.task.service.play;
+
+import static com.kyndryl.task.util.Constants.MESSAGE_GAME_ENDS;
+import static com.kyndryl.task.util.Constants.MESSAGE_PLAYER_WON;
+import static com.kyndryl.task.util.Constants.TASK_DELAY;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kyndryl.dto.PlayDto;
+import com.kyndryl.task.enums.PlayerEnum;
+import com.kyndryl.task.service.drawing.DrawingService;
+
+import lombok.extern.slf4j.Slf4j;
+
+<span class="fc" id="L28">@Slf4j</span>
+@Service
+public class PlayServiceImpl implements PlayService, Runnable {
+
+<span class="fc" id="L32">	private AtomicBoolean running = new AtomicBoolean(true);</span>
+
+<span class="fc" id="L34">	private final AtomicInteger count = new AtomicInteger(0);</span>
+
+<span class="fc" id="L36">	private static List&lt;int[][]&gt; POSITION_LIST = new ArrayList&lt;int[][]&gt;();</span>
+
+	static {
+
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int i = 0; i &lt; 5; i++) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">			for (int j = 0; j &lt; 5; j++) {</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">				if (i % 2 == 0 &amp;&amp; j % 2 == 0) {</span>
+<span class="fc" id="L43">					POSITION_LIST.add(new int[][] { { i, j } });</span>
+				}
+			}
+		}
+<span class="fc" id="L47">	}</span>
+
+	private final DrawingService drawingService;
+
+	private final ScheduledExecutorService scheduledExecutorService;
+
+	private char[][] board;
+
+	@Autowired
+<span class="fc" id="L56">	public PlayServiceImpl(final DrawingService drawingService) {</span>
+<span class="fc" id="L57">		this.scheduledExecutorService = Executors.newScheduledThreadPool(1);</span>
+<span class="fc" id="L58">		this.drawingService = drawingService;</span>
+<span class="fc" id="L59">	}</span>
+
+	@Override
+	public void startGame() {
+<span class="fc" id="L63">		this.board = drawingService.drawBoard();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		while (running.get()) {</span>
+
+			try {
+<span class="nc" id="L67">				scheduledExecutorService.scheduleAtFixedRate(this, TASK_DELAY, TASK_DELAY, TimeUnit.SECONDS).get();</span>
+<span class="pc" id="L68">			} catch (InterruptedException | ExecutionException | CancellationException e) {</span>
+<span class="fc" id="L69">				log.error(&quot;Exited&quot;);</span>
+			}
+		}
+<span class="fc" id="L72">	}</span>
+
+	@Override
+	public PlayDto nextMove() {
+<span class="fc" id="L76">		final int nextIndex = new Random().ints(0, POSITION_LIST.size()).findFirst().getAsInt();</span>
+
+<span class="fc" id="L78">		final int realRow = POSITION_LIST.get(nextIndex)[0][0];</span>
+<span class="fc" id="L79">		final int realCol = POSITION_LIST.get(nextIndex)[0][1];</span>
+
+<span class="fc" id="L81">		final PlayerEnum player = PlayerEnum.nextPlayer();</span>
+<span class="fc" id="L82">		POSITION_LIST.remove(nextIndex);</span>
+<span class="fc" id="L83">		return new PlayDto(realRow, realCol, player);</span>
+	}
+
+	@Override
+	public void markMove(final PlayDto playDto) {
+<span class="fc" id="L88">		board[playDto.getRow()][playDto.getColumn()] = playDto.getPlayer().toString().charAt(0);</span>
+<span class="fc" id="L89">	}</span>
+
+	private String playerHasWon() {
+		// Check each row
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int i = 0; i &lt; 5; i++) {</span>
+<span class="pc bpc" id="L94" title="1 of 8 branches missed.">			final boolean equalRow = i%2 ==0 &amp;&amp; (board[i][0] == board[i][2] &amp;&amp; board[i][2] == board[i][4]) &amp;&amp; board[i][0] != ' ';</span>
+<span class="pc bpc" id="L95" title="6 of 8 branches missed.">			if ((equalRow &amp;&amp; board[i][0] == 'O') || (equalRow &amp;&amp; board[i][0] == 'X')) {</span>
+				//System.out.println(String.format(MESSAGE_PLAYER_WON, board[i][0]));
+<span class="nc" id="L97">				return String.format(MESSAGE_PLAYER_WON, board[i][0]);</span>
+			}
+		}
+
+		// Check each column
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int j = 0; j &lt; 5; j++) {</span>
+<span class="pc bpc" id="L103" title="1 of 8 branches missed.">			final boolean equalCol = j%2 ==0 &amp;&amp; board[0][j] == board[2][j] &amp;&amp; board[2][j] == board[4][j] &amp;&amp; board[0][j] != ' ';</span>
+<span class="pc bpc" id="L104" title="6 of 8 branches missed.">			if (equalCol &amp;&amp; board[0][j] != 'O' || equalCol &amp;&amp; board[0][j] != 'X') {</span>
+				//System.out.println(String.format(MESSAGE_PLAYER_WON, board[0][j]));
+<span class="nc" id="L106">				return String.format(MESSAGE_PLAYER_WON, board[0][j]);</span>
+			}
+		}
+
+		// Check the diagonals
+<span class="pc bpc" id="L111" title="2 of 6 branches missed.">		final boolean leftDiagonal = board[0][0] == board[2][2] &amp;&amp; board[2][2] == board[4][4] &amp;&amp; board[0][0] != ' ';</span>
+<span class="pc bpc" id="L112" title="6 of 8 branches missed.">		if ((leftDiagonal &amp;&amp; board[0][0] != 'O') || (leftDiagonal &amp;&amp; board[0][0] != 'X') ) {</span>
+			//System.out.println(String.format(MESSAGE_PLAYER_WON, board[0][0]));
+<span class="nc" id="L114">			return String.format(MESSAGE_PLAYER_WON, board[0][0]);</span>
+		}
+		
+		//right diagonal
+<span class="pc bpc" id="L118" title="1 of 6 branches missed.">		final boolean rightDiagonal = board[4][0] == board[2][2] &amp;&amp; board[2][2] == board[0][4] &amp;&amp; board[4][0] != ' ';</span>
+<span class="pc bpc" id="L119" title="4 of 8 branches missed.">		if ((rightDiagonal &amp;&amp; board[4][0] != 'O') || (rightDiagonal &amp;&amp; board[4][0] != 'X')) {</span>
+			//System.out.println(String.format(MESSAGE_PLAYER_WON, board[4][0]));
+<span class="fc" id="L121">			return String.format(MESSAGE_PLAYER_WON, board[4][0]);</span>
+		}
+
+<span class="fc" id="L124">		return Strings.EMPTY;</span>
+	}
+
+	@Override
+	public void endGame(final String reason) {
+<span class="fc" id="L129">		running = new AtomicBoolean(false);</span>
+<span class="fc" id="L130">		System.out.println(reason);</span>
+<span class="fc" id="L131">		scheduledExecutorService.shutdown();</span>
+<span class="fc" id="L132">	}</span>
+
+	@Override
+	public void run() {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (!Strings.isEmpty(playerHasWon())) {</span>
+<span class="fc" id="L137">			endGame(playerHasWon());</span>
+<span class="fc" id="L138">			return;</span>
+		}
+		
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (count.getAndIncrement() == 9) {</span>
+<span class="nc" id="L142">			endGame(MESSAGE_GAME_ENDS);</span>
+<span class="nc" id="L143">			return;</span>
+		}
+
+<span class="fc" id="L146">		final PlayDto playDto = nextMove();</span>
+<span class="fc" id="L147">		markMove(playDto);</span>
+<span class="fc" id="L148">		drawingService.printBoard(board);</span>
+<span class="fc" id="L149">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span>tic_tac_toe (Sep 9, 2021 9:55:39 AM)</div></body></html>
